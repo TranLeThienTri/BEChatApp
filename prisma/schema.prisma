@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  userName String
+  hashPassword String
+  avatar String?
+  bio String?
+  refreshToken String?
+  verifycode String?
+  role String @default("user")  
+  repeat Int? @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts Post[]
+  messagesSent   Message[]  @relation("Sender")
+  messagesReceived Message[] @relation("Receiver")
+  // conversations Conversation[]
+  @@map("users")
+}
+
+
+// model Conversation {
+//   con_id Int @id @default(autoincrement())
+//   userIdm Int 
+//   userIdh Int
+  // user1 User @relation("user1", fields: [userIdm], references: [id])
+  // user2 User     @relation("user2", fields: [userIdh], references: [id])
+
+  // createdAt DateTime @default(now())
+  // updateAt DateTime @updatedAt
+  // messages Message[]
+//   @@map("conversations")
+// }
+
+model Message {
+  msg_id Int @id @default(autoincrement())
+
+  content String?
+  sendAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+sendUserId    Int
+  receiverUserId Int
+  sender  User @relation("Sender", fields: [sendUserId], references: [id])
+  receiver User  @relation("Receiver", fields: [receiverUserId], references: [id])
+
+  @@map("messages")
+}
+model Post {
+  post_id Int @id @default(autoincrement())
+  content String
+  hashTag String?
+  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  @@map("posts")
+}
+
