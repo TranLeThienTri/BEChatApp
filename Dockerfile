@@ -1,5 +1,5 @@
 # Sử dụng một hình ảnh Node.js để xây dựng ứng dụng NestJS
-FROM node:18.12.1-bullseye-slim
+FROM node:18
 # Tạo thư mục ứng dụng trong container
 WORKDIR /app
 
@@ -18,4 +18,4 @@ RUN yarn build
 EXPOSE 5000
 
 # Tiến hành khởi động ứng dụng khi container được chạy
-CMD ["yarn", "run", "start:dev"]
+CMD ["yarn", "start:dev"]

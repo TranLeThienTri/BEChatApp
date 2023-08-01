@@ -1,7 +1,8 @@
 import { LoginUserDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import * as argon from 'argon2';
+// import * as argon from 'argon2';
+import * as bcrypt from 'bcryptjs';
 import { AuthUserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -18,8 +19,16 @@ export class AuthService {
     private authUserDto: AuthUserDto,
   ) {}
 
+  async hashPassword(password: string): Promise<string> {
+    const saltRound = 10;
+    const salt = await bcrypt.genSalt(saltRound);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  }
+
   async register(authUserDto: AuthUserDto) {
-    const hashedPassword = await argon.hash(authUserDto.hashPassword);
+    // const hashedPassword = await argon.hash(authUserDto.hashPassword);
+    const hashedPassword = await this.hashPassword(authUserDto.hashPassword);
     const verifycode = String(this.mailService.generateCode());
     try {
       const user = await this.prismaService.user.create({
@@ -59,10 +68,16 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException('not found user');
     }
-    const mathPassword = await argon.verify(
-      user.hashPassword,
+    const mathPassword = await bcrypt.compare(
       loginUserDto.hashPassword,
+      user.hashPassword,
     );
+
+    // thay argon bằng bcrypt
+    // const mathPassword = await argon.verify(
+    //   user.hashPassword,
+    //   loginUserDto.hashPassword,
+    // );
 
     if (!mathPassword) {
       throw new ForbiddenException('invalid password');
