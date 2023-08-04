@@ -1,7 +1,6 @@
 import { LoginUserDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-// import * as argon from 'argon2';
 import * as bcrypt from 'bcryptjs';
 import { AuthUserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
@@ -47,9 +46,6 @@ export class AuthService {
       await this.updateToken(user, refreshToken);
       return { accessToken, refreshToken };
     } catch (error) {
-      console.log(verifycode);
-      console.log(error);
-
       if (error.code === 'P2002') {
         throw new ForbiddenException('exists email');
       }
@@ -72,12 +68,6 @@ export class AuthService {
       loginUserDto.hashPassword,
       user.hashPassword,
     );
-
-    // thay argon bằng bcrypt
-    // const mathPassword = await argon.verify(
-    //   user.hashPassword,
-    //   loginUserDto.hashPassword,
-    // );
 
     if (!mathPassword) {
       throw new ForbiddenException('invalid password');
