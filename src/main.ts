@@ -8,6 +8,7 @@ import * as passport from 'passport';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   // Sử dụng cookie-parser middleware để xử lý cookie
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
