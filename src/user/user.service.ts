@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -63,13 +64,18 @@ export class UserService {
     return userUpdate;
   }
 
-  async deleteUser(id: number) {
+  async deleteUser(id: any) {
     const nid = Number(id);
-    const deleteUser = await this.prismaService.user.delete({
-      where: {
-        id: nid,
-      },
-    });
-    return deleteUser;
+    try {
+      const deleteUser = await this.prismaService.user.delete({
+        where: {
+          id: nid,
+        },
+      });
+      if (!deleteUser) throw new ForbiddenException('not found user');
+      return deleteUser;
+    } catch (error) {
+      throw new ForbiddenException(error);
+    }
   }
 }

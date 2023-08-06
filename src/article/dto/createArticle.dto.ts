@@ -1,7 +1,6 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
-
 /* eslint-disable prettier/prettier */
-export class NewArticleDto {
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
   content: string;
