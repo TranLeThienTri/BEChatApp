@@ -1,20 +1,9 @@
-#
-FROM node:lts
-
-# 
+FROM node:lts-alpine
 WORKDIR /prisma
-
-# 
 COPY prisma/ ./
-
-# COPY ENV variable
 COPY .env ./
-# 
 RUN yarn global add prisma
-
-# 
-RUN npx prisma generate dev
-
-# 
+RUN prisma generate
 EXPOSE 5555
 CMD ["prisma", "studio"]
+# CMD ["prisma", "generate"]

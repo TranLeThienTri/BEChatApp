@@ -18,6 +18,7 @@ export class AuthUserDto {
   token: string;
   refreshToken: string;
   role: string;
+  bio: string;
 }
 export class LoginUserDto {
   @IsNotEmpty()
