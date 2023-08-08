@@ -21,12 +21,12 @@ export class UserController {
     return this.userService.getCurrentUser(id);
   }
 
-  @Get('getallusers')
+  @Get()
   getAllUser() {
     return this.userService.getAllUsers();
   }
 
-  @Get('getusersbynname')
+  @Get('name')
   getUserByName(@Body('name') name: string) {
     return this.userService.getUserByName(name);
   }

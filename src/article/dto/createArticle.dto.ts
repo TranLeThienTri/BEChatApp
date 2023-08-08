@@ -1,14 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
   content: string;
 
   @IsString()
-  hashTag: string;
+  hashTag?: string;
   @IsString()
-  image: string;
-  @IsNumber()
+  image?: string;
   userId: number;
 }
