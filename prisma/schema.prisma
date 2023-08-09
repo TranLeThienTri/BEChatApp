@@ -19,11 +19,12 @@ model User {
   refreshToken String?
   verifycode String?
   role String @default("user")  
-  repeat Int? @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   posts Post[]
+  images   Image[]
+
   messagesSent   Message[]  @relation("Sender")
   messagesReceived Message[] @relation("Receiver")
   @@map("users")
@@ -51,5 +52,15 @@ model Post {
   userId Int
   user User @relation(fields: [userId], references: [id])
   @@map("posts")
-}
+} 
+model Image {
+  id Int @id @default(autoincrement())
+  filename  String
+  filepath  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  @@map("images")
+} 
 

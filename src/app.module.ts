@@ -6,6 +6,9 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { ArticleModule } from './article/article.module';
+import { UploadImageService } from './upload-image/upload-image.service';
+import { UploadImageModule } from './upload-image/upload-image.module';
+import { UploadImageController } from './upload-image/upload-image.controller';
 @Module({
   imports: [
     AuthModule,
@@ -15,8 +18,9 @@ import { ArticleModule } from './article/article.module';
       isGlobal: true, // no need to import into other modules
     }),
     ArticleModule,
+    UploadImageModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, UploadImageController],
+  providers: [AppService, UploadImageService],
 })
 export class AppModule {}

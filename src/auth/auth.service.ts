@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   async register(authUserDto: AuthUserDto) {
-    // const hashedPassword = await argon.hash(authUserDto.hashPassword);
     const hashedPassword = await this.hashPassword(authUserDto.hashPassword);
     const verifycode = String(this.mailService.generateCode());
     try {
@@ -150,13 +149,12 @@ export class AuthService {
       where: { email: email },
     });
     if (!user) throw new ForbiddenException('not found user!!');
-
     const storeCode = user.verifycode;
-
     if (storeCode === code) {
       return true;
+    } else {
+      this.deleteUser(user);
     }
-
     return false;
   }
 
