@@ -78,4 +78,46 @@ export class UserService {
       throw new ForbiddenException(error);
     }
   }
+  // async updateUserImage(userId: number, imageID: number) {
+  //   const user = await this.prismaService.user.findUnique({
+  //     where: {
+  //       id: userId,
+  //     },
+  //   });
+  //   if (!user) throw new ForbiddenException('not found user');
+  //   const image = await this.prismaService.image.findUnique({
+  //     where: {
+  //       id: imageID,
+  //     },
+  //   });
+  //   await this.prismaService.user.update({
+  //     where: {
+  //       id: userId,
+  //     },
+  //     data: {
+  //       avatar: image.filepath,
+  //     },
+  //   });
+  // }
+
+  async uploadImage(userId: number, file: Express.Multer.File) {
+    const createdFile = await this.prismaService.image.create({
+      data: { filename: file.filename, filepath: file.path, userId },
+    });
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) throw new ForbiddenException('not found user');
+    await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        avatar: file.path,
+      },
+    });
+    return createdFile;
+  }
 }
