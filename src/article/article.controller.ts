@@ -35,7 +35,6 @@ export class ArticleController {
     @GetUser('id') userId: number,
     @Body() createArticleDto: CreateArticleDto,
   ) {
-    console.log(typeof userId);
     return await this.articleService.createArticle(userId, createArticleDto);
   }
 

@@ -71,6 +71,11 @@ export class AuthService {
     if (!mathPassword) {
       throw new ForbiddenException('invalid password');
     }
+
+    const isVerified = user.isVerify;
+
+    if (!isVerified) throw new ForbiddenException('not verified');
+
     const accessToken = await this.generateAccessToken(user.id, user.email);
     const refreshToken = await this.generateRefreshToken(user.id, user.email);
     await this.updateToken(user, refreshToken);
@@ -149,8 +154,15 @@ export class AuthService {
       where: { email: email },
     });
     if (!user) throw new ForbiddenException('not found user!!');
+
     const storeCode = user.verifycode;
     if (storeCode === code) {
+      const user = await this.prismaService.user.update({
+        where: { email: email },
+        data: {
+          isVerify: true,
+        },
+      });
       return true;
     } else {
       this.deleteUser(user);
