@@ -7,6 +7,12 @@ import { use } from 'passport';
 @Injectable()
 export class UserService {
   constructor(private prismaService: PrismaService) {}
+
+  async getAllUsers() {
+    const users = await this.prismaService.user.findMany();
+    return users;
+  }
+
   async getCurrentUser(id: number) {
     const currentUser = await this.prismaService.user.findUnique({
       where: {
@@ -19,19 +25,18 @@ export class UserService {
 
   async getUserById(id: number) {
     const idc = Number(id);
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        id: idc,
-      },
-    });
-    if (!user) throw new ForbiddenException('not found user in db');
-    delete user.hashPassword;
-    return user;
-  }
-
-  async getAllUsers(): Promise<User[]> {
-    const users: User[] = await this.prismaService.user.findMany();
-    return users;
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: idc,
+        },
+      });
+      if (!user) throw new ForbiddenException('not found user in db');
+      delete user.hashPassword;
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async getUserByName(name: string): Promise<User[]> {
