@@ -31,10 +31,10 @@ export class AuthController {
   @Post('refresh')
   async refreshToken(@GetUser() user: User): Promise<{
     accessToken: string;
-    refreshToken: string;
   }> {
     return await this.authService.refreshToken(user.id, user.refreshToken);
   }
+
   @Post('verify')
   async verifyCode(
     @Body('email') email: string,

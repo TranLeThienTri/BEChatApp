@@ -61,7 +61,6 @@ export class UserController {
   ) {
     if (!file) throw new BadRequestException('File input is not image');
     return await this.userService.uploadImage(id, file);
-    // return `http://localhost:3000/user/pictures/${file.filename}`;
   }
 
   @Get('/pictures/:filename')

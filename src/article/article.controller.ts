@@ -20,9 +20,9 @@ import { GetUser } from 'src/auth/decorator';
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
-  @Get() //example: /article/
-  async getAllArticle(@GetUser('id') userId: number) {
-    return await this.articleService.getAllArticle(userId);
+  @Get('all') //example: /article/
+  async getAllArticle() {
+    return await this.articleService.getAllArticle();
   }
 
   @Get(':id') //example: /article/123
@@ -30,6 +30,10 @@ export class ArticleController {
     return await this.articleService.getArticleById(id);
   }
 
+  @Get('')
+  async getArticleOfUser(@GetUser('id') userId: number) {
+    return await this.articleService.getArticleOfUser(userId);
+  }
   @Post() //example: /article/
   async createNewArticle(
     @GetUser('id') userId: number,

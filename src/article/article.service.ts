@@ -7,13 +7,8 @@ import { CreateArticleDto } from './dto';
 export class ArticleService {
   constructor(private prismaService: PrismaService) {}
 
-  async getAllArticle(userId: number) {
-    const articles = await this.prismaService.post.findMany({
-      where: {
-        userId,
-      },
-    });
-    return articles;
+  async getAllArticle() {
+    return await this.prismaService.post.findMany();
   }
 
   async getArticleById(id: number) {
@@ -78,5 +73,18 @@ export class ArticleService {
         post_id: article.post_id,
       },
     });
+  }
+
+  async getArticleOfUser(userId: number) {
+    try {
+      const article = await this.prismaService.post.findMany({
+        where: {
+          userId,
+        },
+      });
+      return article;
+    } catch (error) {
+      throw new ForbiddenException(error);
+    }
   }
 }

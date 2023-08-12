@@ -6,8 +6,6 @@ export class CreateArticleDto {
   content: string;
 
   @IsString()
-  hashTag?: string;
-  @IsString()
   image?: string;
   userId: number;
 }
