@@ -99,9 +99,9 @@ export class AuthService {
       throw new ForbiddenException('refresh invalid');
     }
     const accessToken = await this.generateAccessToken(user.id, user.email);
-    const refreshToken = await this.generateRefreshToken(user.id, user.email);
-    await this.updateToken(user, refreshToken);
-    return { accessToken, refreshToken };
+    // const refreshToken = await this.generateRefreshToken(user.id, user.email);
+    // await this.updateToken(user, refreshToken);
+    return { accessToken };
   }
 
   async generateAccessToken(userId: number, email: string) {
