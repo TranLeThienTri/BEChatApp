@@ -20,8 +20,10 @@ import { GetUser } from '../auth/decorator';
 import { UpdateUserDto } from './dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express, Response } from 'express';
-import { diskStorage } from 'multer';
-
+import { ApiTags } from '@nestjs/swagger';
+import { storageConfig } from 'helpers/config';
+import { extname } from 'path';
+@ApiTags('User')
 @Controller('user')
 @UseGuards(MyGuards)
 export class UserController {
@@ -32,26 +34,24 @@ export class UserController {
   }
   @Post('upload-file')
   @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const fileName = file.originalname.split('.')[0];
-          const fileExtention = file.originalname.split('.')[1];
-          const newFileName =
-            fileName.split(' ').join('_') +
-            '_' +
-            Date.now() +
-            '.' +
-            fileExtention;
-          cb(null, newFileName);
-        },
-      }),
-      fileFilter(req, file, callback) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(null, false);
+    FileInterceptor('avatar', {
+      storage: storageConfig('avatar'),
+      fileFilter: (req, file, cb) => {
+        const ext = extname(file.originalname);
+        const allowedExtArr = ['.jpg', '.png', '.jpeg'];
+        if (!allowedExtArr.includes(ext)) {
+          req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+          cb(null, false);
+        } else {
+          const fileSize = parseInt(req.headers['content-length']);
+          if (fileSize > 1024 * 1024 * 10) {
+            req.fileValidationError =
+              'File size is too large. Accepted file size is less than 5 MB';
+            cb(null, false);
+          } else {
+            cb(null, true);
+          }
         }
-        callback(null, true);
       },
     }),
   )
@@ -59,8 +59,14 @@ export class UserController {
     @GetUser('id') id: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file) throw new BadRequestException('File input is not image');
-    return await this.userService.uploadImage(id, file);
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    return await this.userService.uploadImage(
+      id,
+      file,
+      file.destination + '/' + file.filename,
+    );
   }
 
   @Get('/pictures/:filename')
