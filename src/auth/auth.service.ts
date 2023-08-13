@@ -1,6 +1,11 @@
 import { LoginUserDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { AuthUserDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
@@ -52,30 +57,22 @@ export class AuthService {
   }
 
   //ĐĂNG NHẬP
-  async login(loginUserDto: LoginUserDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async login(loginUserDto: LoginUserDto) {
     const user = await this.prismaService.user.findUnique({
       where: { email: loginUserDto.email },
     });
-
     if (!user) {
-      throw new ForbiddenException('not found user');
+      throw new HttpException('Email is not exist', HttpStatus.UNAUTHORIZED);
     }
     const mathPassword = await bcrypt.compare(
       loginUserDto.hashPassword,
       user.hashPassword,
     );
-
     if (!mathPassword) {
-      throw new ForbiddenException('invalid password');
+      throw new HttpException('invalid password', HttpStatus.UNAUTHORIZED);
     }
-
     const isVerified = user.isVerify;
-
     if (!isVerified) throw new ForbiddenException('not verified');
-
     const accessToken = await this.generateAccessToken(user.id, user.email);
     const refreshToken = await this.generateRefreshToken(user.id, user.email);
     await this.updateToken(user, refreshToken);
@@ -90,7 +87,7 @@ export class AuthService {
       },
     });
     if (!user) {
-      throw new ForbiddenException('not found user');
+      throw new HttpException('Email is not exist', HttpStatus.UNAUTHORIZED);
     }
 
     const rfMatches = rfToken === user.refreshToken;
@@ -99,8 +96,6 @@ export class AuthService {
       throw new ForbiddenException('refresh invalid');
     }
     const accessToken = await this.generateAccessToken(user.id, user.email);
-    // const refreshToken = await this.generateRefreshToken(user.id, user.email);
-    // await this.updateToken(user, refreshToken);
     return { accessToken };
   }
 
@@ -177,14 +172,4 @@ export class AuthService {
       },
     });
   }
-  // async updateRepeat(user: User, count: string) {
-  //   await this.prismaService.user.update({
-  //     where: {
-  //       id: user.id,
-  //     },
-  //     data: {
-  //       repeat: count,
-  //     },
-  //   });
-  // }
 }

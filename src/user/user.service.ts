@@ -105,9 +105,9 @@ export class UserService {
   //   });
   // }
 
-  async uploadImage(userId: number, file: Express.Multer.File) {
+  async uploadImage(userId: number, file: Express.Multer.File, avatar: string) {
     const createdFile = await this.prismaService.image.create({
-      data: { filename: file.filename, filepath: file.path, userId },
+      data: { filename: file.filename, filepath: avatar, userId },
     });
     const user = await this.prismaService.user.findUnique({
       where: {
