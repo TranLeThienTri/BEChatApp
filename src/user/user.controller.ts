@@ -32,42 +32,42 @@ export class UserController {
   async getAllUser() {
     return await this.userService.getAllUsers();
   }
-  @Post('upload-file')
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: storageConfig('avatar'),
-      fileFilter: (req, file, cb) => {
-        const ext = extname(file.originalname);
-        const allowedExtArr = ['.jpg', '.png', '.jpeg'];
-        if (!allowedExtArr.includes(ext)) {
-          req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
-          cb(null, false);
-        } else {
-          const fileSize = parseInt(req.headers['content-length']);
-          if (fileSize > 1024 * 1024 * 10) {
-            req.fileValidationError =
-              'File size is too large. Accepted file size is less than 5 MB';
-            cb(null, false);
-          } else {
-            cb(null, true);
-          }
-        }
-      },
-    }),
-  )
-  async uploadPhoto(
-    @GetUser('id') id: number,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-    return await this.userService.uploadImage(
-      id,
-      file,
-      file.destination + '/' + file.filename,
-    );
-  }
+  // @Post('upload-file')
+  // @UseInterceptors(
+  //   FileInterceptor('avatar', {
+  //     storage: storageConfig('avatar'),
+  //     fileFilter: (req, file, cb) => {
+  //       const ext = extname(file.originalname);
+  //       const allowedExtArr = ['.jpg', '.png', '.jpeg'];
+  //       if (!allowedExtArr.includes(ext)) {
+  //         req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+  //         cb(null, false);
+  //       } else {
+  //         const fileSize = parseInt(req.headers['content-length']);
+  //         if (fileSize > 1024 * 1024 * 10) {
+  //           req.fileValidationError =
+  //             'File size is too large. Accepted file size is less than 5 MB';
+  //           cb(null, false);
+  //         } else {
+  //           cb(null, true);
+  //         }
+  //       }
+  //     },
+  //   }),
+  // )
+  // async uploadPhoto(
+  //   @GetUser('id') id: number,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   if (!file) {
+  //     throw new BadRequestException('File is required');
+  //   }
+  //   return await this.userService.uploadImage(
+  //     id,
+  //     file,
+  //     file.destination + '/' + file.filename,
+  //   );
+  // }
 
   @Get('/pictures/:filename')
   async getImage(@Param('filename') filename: any, @Res() res: Response) {
@@ -90,12 +90,40 @@ export class UserController {
     return await this.userService.getUserById(id);
   }
 
-  @Patch(':id')
+  @Patch()
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: storageConfig('avatar'),
+      fileFilter: (req, file, cb) => {
+        const ext = extname(file.originalname);
+        const allowedExtArr = ['.jpg', '.png', '.jpeg'];
+        if (!allowedExtArr.includes(ext)) {
+          req.fileValidationError = `Wrong extension type. Accepted file ext are: ${allowedExtArr.toString()}`;
+          cb(null, false);
+        } else {
+          const fileSize = parseInt(req.headers['content-length']);
+          if (fileSize > 1024 * 1024 * 10) {
+            req.fileValidationError =
+              'File size is too large. Accepted file size is less than 5 MB';
+            cb(null, false);
+          } else {
+            cb(null, true);
+          }
+        }
+      },
+    }),
+  )
   async updateUser(
-    @Param('id') id: number,
+    @GetUser('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.userService.updateUser(id, updateUserDto);
+    if (file) {
+      updateUserDto.avatar = file.destination + '/' + file.filename;
+    }
+    console.log(file);
+
+    return await this.userService.updateUser(id, { ...updateUserDto });
   }
 
   @Delete(':id')

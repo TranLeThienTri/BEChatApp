@@ -1,14 +1,20 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { IsEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmpty,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 export class CreateArticleDto {
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
   content: string;
 
   @ApiProperty()
+  @IsOptional()
   image?: string;
 
   @ApiProperty()
