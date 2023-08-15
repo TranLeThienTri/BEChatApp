@@ -5,11 +5,11 @@ import * as passport from 'passport';
 import * as express from 'express';
 import { join } from 'path';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-
+  // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.useGlobalPipes(new ValidationPipe());
   app.use(passport.initialize());
 
@@ -27,6 +27,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  console.log(join(__dirname, '../../uploads')); //thêm này cho phần static file
+  app.useStaticAssets(join(__dirname, '../../uploads')); //thêm này cho phần static file
   await app.listen(3000);
 }
 bootstrap();

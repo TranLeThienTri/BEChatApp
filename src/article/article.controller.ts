@@ -68,9 +68,13 @@ export class ArticleController {
     @Body() createArticleDto: CreateArticleDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (file) {
+      createArticleDto.image = file.destination + '/' + file.filename;
+    } else {
+      createArticleDto.image = null;
+    }
     return await this.articleService.createArticle(userId, {
       ...createArticleDto,
-      image: file.destination + '/' + file.filename,
     });
   }
 
@@ -105,10 +109,9 @@ export class ArticleController {
     if (file) {
       updateArticleDto.image = file.destination + '/' + file.filename;
     }
-    return await this.articleService.UpdateArticleById(
-      articleId,
-      updateArticleDto,
-    );
+    return await this.articleService.UpdateArticleById(articleId, {
+      ...updateArticleDto,
+    });
   }
 
   @Delete(':id')
