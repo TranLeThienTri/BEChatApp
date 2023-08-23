@@ -70,9 +70,8 @@ export class ArticleController {
   ) {
     if (file) {
       createArticleDto.image = file.destination + '/' + file.filename;
-    } else {
-      createArticleDto.image = null;
     }
+    console.log(file);
     return await this.articleService.createArticle(userId, {
       ...createArticleDto,
     });

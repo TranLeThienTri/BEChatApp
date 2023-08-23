@@ -12,6 +12,9 @@ async function bootstrap() {
   // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.useGlobalPipes(new ValidationPipe());
   app.use(passport.initialize());
+  // Tăng giới hạn payload lên ví dụ 20MB
+  app.use(express.json({ limit: '20mb' }));
+  app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
   const config = new DocumentBuilder()
     .setTitle('App chat APIs')
