@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { AuthUserDto } from './../auth/dto/auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
@@ -15,9 +16,8 @@ export class MailService {
     try {
       await this.mailerService.sendMail({
         to: email,
-        // from: '"Support Team" <support@example.com>', // override default from
         subject: 'Welcome to App Chat Realtime! Confirm your Email',
-        template: './confirmation', // `.hbs` extension is appended automatically
+        template: './confirmation',
         context: {
           name: name,
           url,
@@ -25,7 +25,7 @@ export class MailService {
       });
       console.error('send mail successfully');
     } catch (error) {
-      console.error('Error send mail ', error);
+      console.log('Error send mail', error);
     }
   }
 

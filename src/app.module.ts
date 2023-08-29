@@ -1,11 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { ArticleModule } from './article/article.module';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     AuthModule,
@@ -15,8 +15,7 @@ import { ArticleModule } from './article/article.module';
       isGlobal: true, // no need to import into other modules
     }),
     ArticleModule,
+    ChatModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

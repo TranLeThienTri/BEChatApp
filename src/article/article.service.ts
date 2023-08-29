@@ -1,7 +1,9 @@
+/* eslint-disable prettier/prettier */
 import { UpdateArticleDto } from './dto/update.article.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { CreateArticleDto } from './dto';
+import { Post } from '@prisma/client';
 
 @Injectable()
 export class ArticleService {
@@ -86,5 +88,16 @@ export class ArticleService {
     } catch (error) {
       throw new ForbiddenException(error);
     }
+  }
+
+  async getArticleByContent(content: string) {
+    const articles = await this.prismaService.post.findMany({
+      where: {
+        content: {
+          contains: content,
+        },
+      },
+    });
+    return articles;
   }
 }

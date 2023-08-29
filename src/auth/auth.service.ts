@@ -1,7 +1,10 @@
+/* eslint-disable prettier/prettier */
+import { UserService } from './../user/user.service';
 import { LoginUserDto } from './dto/auth.dto';
 import { PrismaService } from './../prisma/prisma.service';
 import {
   ForbiddenException,
+  HttpCode,
   HttpException,
   HttpStatus,
   Injectable,
@@ -21,6 +24,7 @@ export class AuthService {
     public configService: ConfigService,
     private mailService: MailService,
     private authUserDto: AuthUserDto,
+    private userService: UserService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -105,7 +109,7 @@ export class AuthService {
       email,
     };
     return await this.jwtService.signAsync(payload, {
-      expiresIn: '15m',
+      expiresIn: '7d',
       secret: this.configService.get('JWT_SECRET'),
     });
   }
@@ -171,5 +175,29 @@ export class AuthService {
         id: user.id,
       },
     });
+  }
+
+  async handleVerifyToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      return payload['sub'];
+    } catch (e) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.UNAUTHORIZED,
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
+
+  async getUserFromAuthenticationToken(token: string) {
+    const payload = this.jwtService.verify(token, {
+      secret: this.configService.get('JWT_SECRET'),
+    });
+    if (payload.sub) {
+      console.log(payload.sub);
+      return this.userService.getUserById(payload.sub);
+    }
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { UserService } from './user.service';
 // import { AuthGuard } from '@nestjs/passport';
 import {
@@ -121,8 +122,6 @@ export class UserController {
     if (file) {
       updateUserDto.avatar = file.destination + '/' + file.filename;
     }
-    console.log(file);
-
     return await this.userService.updateUser(id, { ...updateUserDto });
   }
 

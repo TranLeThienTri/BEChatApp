@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { MyGuards } from './../auth/guard/myjwt.guard';
 import {
   Body,
@@ -8,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,6 +28,10 @@ import { extname } from 'path';
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
+  @Get('content')
+  async getArticleByContent(@Body('content') content: string) {
+    return await this.articleService.getArticleByContent(content);
+  }
   @Get('all') //example: /article/
   async getAllArticle() {
     return await this.articleService.getAllArticle();
@@ -40,6 +46,7 @@ export class ArticleController {
   async getArticleOfUser(@GetUser('id') userId: number) {
     return await this.articleService.getArticleOfUser(userId);
   }
+
   @Post() //example: /article/
   @UseInterceptors(
     FileInterceptor('image', {
